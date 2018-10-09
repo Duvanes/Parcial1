@@ -85,6 +85,16 @@ create table colegios (
 
 --7. Queries (DO NOT CHANGE THE NAME OF THE COLUMNS):
 --7.1: Traiga el nombre del barrio y el número de colegios ubicados en cada barrio de aquellas instituciones ubicadas en la comuna de buenos aires ordenado por el número de colegios de mayor a menor.
-SELECT barrio from colegios 
-INNER JOIN comunas, over(count ID) as numero_colegios ON colegios.comuna_id = comunas.id
-where comunas.nombre = 'BUENOS AIRES';
+SELECT barrio, count(nombre_sede) over(partition by barrio) numero_colegios from colegios 
+INNER JOIN comunas ON colegios.comuna_id = comunas.id
+where comunas.nombre = 'BUENOS AIRES'
+ORDER BY numero_colegios DESC;
+
+--7.2: Traiga los registros junto con el nombre de su comuna, para cada registro deberá calcularse el total de los estudiantes según los contadores. También deberá traer el total de estudiantes agrupados por comuna.
+Select colegios.ID, colegios.nombre_sede as NOMBRE_SEDE,  colegios.comuna_id as COMUNA_ID, comunas.NOMBRE as NOMBRE_COMUNA from colegios
+INNER JOIN comunas ON colegios.comuna_id = comunas.id
+
+--
+SELECT barrio, nombre_sede, comuna_id from colegios where comuna_id = '9' and barrio = 'La Milagrosa'
+INNER JOIN comunas ON colegios.comuna_id = comunas.id
+where comunas.nombre = 'BUENOS AIRES'
