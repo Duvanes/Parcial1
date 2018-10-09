@@ -1,0 +1,90 @@
+--1. CREATE A TABLESPACE MID_TERM WITH ONE DATAFILE OF 50Mb (For the datafile don't put the path, just the name of the datafile
+CREATE TABLESPACE MID_TERM -- nombre de TABLESPACE – para crearlo apagado se debe colocar offline
+DATAFILE 'Mid_term' SIZE 50M;  -- nombre de DATAFILE
+
+--2. CREATE AN USER WITH 20Mb ASSIGNED TO THE TABLESPACE MID_TERM
+CREATE USER Parcial -- nombre de usuario
+IDENTIFIED BY 123456 -- contraseña del usuario
+DEFAULT TABLESPACE MID_TERM -- TABLESPACE asociado
+QUOTA 20M ON Practica; -- espcaio en TABLESPACE
+
+--3. GIVE THE DBA ROLE TO THE USER, ALSO SHOULD BE ABLE TO LOG IN.
+GRANT CREATE SESSION TO Parcial; -- permisos de coneccion a user
+GRANT dba TO Parcial; -- permisos de DBA al user
+
+--4. CREATE TWO SEQUENCES:
+CREATE SEQUENCE COMUNAS_SEQ -- nombre de la secuencia
+    START WITH 50 -- dato en el que empieza la secuencia
+    INCREMENT BY 3; -- incremento
+
+CREATE SEQUENCE COLEGIOS_SEQ -- nombre de la secuencia
+    START WITH 100 -- dato en el que empieza la secuencia
+    INCREMENT BY 1; -- incremento
+    
+--5. CREATE THE NEXT TABLES:
+CREATE TABLE COMUNAS 
+(
+	ID INTEGER PRIMARY KEY,
+	NOMBRE VARCHAR2(255)
+);
+
+INSERT INTO COMUNAS VALUES (1,	'POPULAR');
+INSERT INTO COMUNAS VALUES (10,	'LA CANDELARIA');
+INSERT INTO COMUNAS VALUES (11,	'LAURELES ESTADIO');
+INSERT INTO COMUNAS VALUES (12,	'LA AMERICA');
+INSERT INTO COMUNAS VALUES (13,	'SAN JAVIER');
+INSERT INTO COMUNAS VALUES (14,	'POBLADO');
+INSERT INTO COMUNAS VALUES (15,	'GUAYABAL');
+INSERT INTO COMUNAS VALUES (16,	'BELÉN');
+INSERT INTO COMUNAS VALUES (2,	'SANTA CRUZ');
+INSERT INTO COMUNAS VALUES (3,	'MANRIQUE');
+INSERT INTO COMUNAS VALUES (4,	'ARANJUEZ');
+INSERT INTO COMUNAS VALUES (5,	'CASTILLA');
+INSERT INTO COMUNAS VALUES (50,	'PALMITAS');
+INSERT INTO COMUNAS VALUES (6,	'DOCE DE OCTUBRE');
+INSERT INTO COMUNAS VALUES (60,	'SAN CRISTOBAL');
+INSERT INTO COMUNAS VALUES (7,	'ROBLEDO');
+INSERT INTO COMUNAS VALUES (70,	'ALTAVISTA');
+INSERT INTO COMUNAS VALUES (8,	'VILLA HERMOSA');
+INSERT INTO COMUNAS VALUES (80,	'SAN ANTONIO DE PRADO');
+INSERT INTO COMUNAS VALUES (9,	'BUENOS AIRES');
+INSERT INTO COMUNAS VALUES (90,	'SANTA ELENA');
+
+--FOR THE NEXT TABLE YOU SHOULD: 	
+--* ADD THE PRIMARY KEY "ID" COLUMN TO THE COLEGIOS TABLE, ALSO ADD THE FOREIGN KEY WITH COMUNAS TABLE. THE NAME OF THE FOREIGN KEY SHOULD BE "COMUNA_FK"
+create table colegios (
+    ID INTEGER PRIMARY KEY,-- ADD THE PRIMARY KEY "ID" COLUMN
+	consecutivo_dane VARCHAR2(255),
+	nombre_sede VARCHAR2(255),
+	tipo_sede VARCHAR2(255),
+	comuna_id INTEGER,
+	prestacion_servicio VARCHAR2(255),
+	zona VARCHAR2(255),
+	barrio VARCHAR2(255),
+	sector VARCHAR2(255),
+	direccion_sede VARCHAR2(255),
+	telefono_sede VARCHAR2(255),
+	rector VARCHAR2(255),
+	contador_prejardin_jardin INTEGER,
+	contador_transicion INTEGER,
+	contador_primaria INTEGER,
+	contador_secundaria INTEGER,
+	contador_media INTEGER,
+	contador_adultos INTEGER,
+	jornada_completa VARCHAR(8),
+	jornada_manana VARCHAR(8),
+	jornada_tarde VARCHAR(8),
+	jornada_nocturna VARCHAR(8),
+	jornada_fin_de_semana VARCHAR(8),
+	jornada_unica VARCHAR(8),
+	clasificacion_icfes VARCHAR(8),
+    CONSTRAINT COMUNA_FK  FOREIGN KEY (comuna_id) REFERENCES COMUNAS(ID)-- ADD THE FOREIGN KEY WITH COMUNAS TABLE
+);
+
+--6. Import the data: https://gist.github.com/amartinezg/035524e3cb6ec719bb839dd97018c098
+
+--7. Queries (DO NOT CHANGE THE NAME OF THE COLUMNS):
+--7.1: Traiga el nombre del barrio y el número de colegios ubicados en cada barrio de aquellas instituciones ubicadas en la comuna de buenos aires ordenado por el número de colegios de mayor a menor.
+SELECT barrio from colegios 
+INNER JOIN comunas, over(count ID) as numero_colegios ON colegios.comuna_id = comunas.id
+where comunas.nombre = 'BUENOS AIRES';
